@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#234b35">
+<title>Harvest Haven — Mobile Test</title>
+<style>
+:root{--forest:#234b35;--leaf:#3d754b;--mint:#dff0d7;--cream:#fff8e9;--gold:#efbd55;--ink:#203329;--muted:#6c7c6d;--soil:#8b5e3c;--card:#fffdf7;--line:#e5e7d8;--red:#b84c3b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:#e9eee3}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:linear-gradient(#e9eee3,#f6f3e8);min-height:100dvh}
+button{font:inherit;cursor:pointer;border:0}
+.app{max-width:560px;margin:0 auto;min-height:100dvh;background:var(--cream);padding-bottom:calc(82px + env(safe-area-inset-bottom));box-shadow:0 0 35px #20332916;position:relative}
+.top{background:var(--forest);color:white;padding:calc(12px + env(safe-area-inset-top)) 16px 16px;border-radius:0 0 22px 22px}
+.brandline{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:14px;background:#f3ce76;display:grid;place-items:center;font-size:25px}
+h1{font-size:21px;line-height:1.1;margin:0}.subtitle{font-size:12px;color:#d7e8d5;margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.stat{background:#ffffff12;border:1px solid #ffffff18;border-radius:13px;padding:9px 10px}.stat small{display:block;color:#d2e4d0;font-size:11px}.stat strong{font-size:17px}
+main{padding:14px 13px}
+.daybanner{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f6e7bd;border:1px solid #eed79b;border-radius:16px;padding:12px 13px;margin-bottom:13px}
+.daybanner strong{display:block;font-size:14px}.daybanner span{font-size:12px;color:#69582d}
+.pill{border-radius:999px;background:#fff9e9;color:#705521;padding:7px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;margin:17px 2px 9px}.sectionhead h2{font-size:16px;margin:0}.sectionhead small{font-size:11px;color:var(--muted)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:13px}
+.tab{padding:10px 4px;border-radius:12px;background:#edf0e5;color:#536453;font-weight:750;font-size:12px}
+.tab.active{background:var(--leaf);color:white}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:13px;margin-bottom:12px}
+.panel p{margin:6px 0;color:var(--muted);font-size:12px;line-height:1.45}
+.field{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.plot{min-width:0;min-height:112px;border-radius:14px;border:2px solid #d8c69a;background:linear-gradient(145deg,#b88a57,#8f603d);padding:7px 4px;color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:3px;position:relative;overflow:hidden}
+.plot.empty{background:linear-gradient(145deg,#bd9362,#8d603e)}
+.plot.ready{background:linear-gradient(145deg,#d6e6a1,#88b95a);border-color:#a3c875;color:#26472b}
+.plot.locked{background:#e5e3d7;border-color:#d2d0c3;color:#96998a}
+.plot .crop{font-size:30px;line-height:1.1}.plot b{font-size:12px}.plot small{font-size:10px;opacity:.94}
+.plot .mini{position:absolute;top:5px;right:5px;font-size:9px;background:#ffffffd9;color:#3e573f;border-radius:20px;padding:3px 5px}
+.btn{background:var(--leaf);color:white;border-radius:12px;padding:11px 13px;font-size:13px;font-weight:800;box-shadow:0 2px 0 #244b30;transition:transform .08s}
+.btn:active{transform:translateY(1px);box-shadow:none}
+.btn.secondary{background:#f2e4bf;color:#5c4b23;box-shadow:0 2px 0 #d8c48e}
+.btn.ghost{background:#eef1e8;color:#3c5b42;box-shadow:none;border:1px solid #dfe5d6}
+.btn.danger{background:var(--red);box-shadow:0 2px 0 #813427}
+.btn:disabled{opacity:.42}
+.rowbtn{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.rowbtn .btn{flex:1}
+.croplist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.cropcard{border:1px solid var(--line);border-radius:14px;padding:10px;background:#fff}
+.cropcard .emoji{font-size:25px}.cropcard strong{display:block;font-size:13px;margin-top:3px}.cropcard small{color:var(--muted);font-size:11px;display:block;margin:3px 0 8px}
+.cropcard .btn{width:100%;padding:9px 5px;font-size:12px}
+.order{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.order:last-child{border-bottom:0}.order .orderemoji{font-size:25px}.order .desc{flex:1;min-width:0}.order strong{font-size:13px}.order small{display:block;color:var(--muted);font-size:11px;margin-top:2px}.order .btn{padding:8px 10px;font-size:11px}
+.progress{height:6px;border-radius:20px;background:#e7ebde;overflow:hidden;margin-top:5px}.progress span{display:block;height:100%;background:#77a95e;border-radius:20px}
+.hidden{display:none!important}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(560px,100%);display:grid;grid-template-columns:repeat(4,1fr);gap:3px;background:#fffdf7f5;border-top:1px solid #e4e7da;padding:8px 10px calc(8px + env(safe-area-inset-bottom));backdrop-filter:blur(14px);z-index:10}
+.nav button{background:transparent;color:#788275;font-size:10px;font-weight:750;padding:5px 0;border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav button span{font-size:22px}.nav button.active{background:#e8f0df;color:var(--forest)}
+.toast{position:fixed;z-index:20;bottom:94px;left:50%;transform:translateX(-50%);width:max-content;max-width:90%;background:#203c2b;color:white;border-radius:14px;padding:11px 15px;font-size:13px;box-shadow:0 6px 25px #0002;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+.choice{border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:9px;background:white}.choice h3{font-size:14px;margin:0}.choice p{margin:5px 0 10px}
+.tag{font-size:10px;font-weight:800;border-radius:30px;padding:4px 7px;background:#e4f0dc;color:#3f693e;display:inline-block;margin-bottom:5px}
+.note{background:#edf4e8;border-radius:12px;padding:10px 11px;font-size:12px;color:#466146;line-height:1.45}
+footer{text-align:center;padding:8px 12px 16px;color:#8b9385;font-size:10px}
+@media(min-width:430px){main{padding:16px}.field{gap:10px}.plot{min-height:122px}}
+
+/* Walkable isometric farm test */
+.explore{background:#e5efd8;border:1px solid #c8d9bb;border-radius:18px;padding:10px;margin:0 0 14px;box-shadow:0 4px 0 #d2dfc6}
+.explorehead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 3px 9px}.explorehead strong{font-size:15px}.explorehead small{font-size:10px;color:#55705a}
+.worldwrap{position:relative;border-radius:14px;overflow:hidden;background:#b8d99b;border:2px solid #91b879;touch-action:none}
+#world{display:block;width:100%;height:310px;touch-action:none}
+.worldhint{position:absolute;top:8px;left:8px;background:#173a2ccc;color:#fff;border-radius:9px;padding:6px 8px;font-size:10px;pointer-events:none}
+.joy{position:absolute;bottom:12px;left:12px;width:104px;height:104px;border-radius:50%;background:#173a2c66;border:2px solid #ffffffaa;touch-action:none;display:grid;place-items:center}
+.joyknob{width:42px;height:42px;border-radius:50%;background:#fff9e9;border:2px solid #58835a;box-shadow:0 2px 5px #0003;pointer-events:none}
+.worldactions{position:absolute;right:12px;bottom:14px;display:flex;flex-direction:column;gap:8px}.worldaction{width:56px;height:56px;border-radius:50%;background:#f8e5a8;color:#34513a;border:2px solid #fff8d8;font-size:22px;box-shadow:0 3px 0 #a4b88d}.worldaction:active{transform:scale(.96)}
+.worldstatus{font-size:11px;color:#48664b;padding:8px 3px 1px;display:flex;justify-content:space-between;gap:8px}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="brandline"><div class="logo">🌻</div><div><h1>Harvest Haven</h1><div class="subtitle">A little land. A whole new beginning.</div></div></div>
+  <div class="stats">
+    <div class="stat"><small>🪙 Coins</small><strong id="coins">120</strong></div>
+    <div class="stat"><small>🌾 Harvest</small><strong id="harvest">0</strong></div>
+    <div class="stat"><small>⭐ Reputation</small><strong id="rep">0</strong></div>
+  </div>
+</header>
+<main>
+  <div class="daybanner"><div><strong id="dayTitle">Day 1 · A Fresh Start</strong><span id="dayDesc">Plant your first seeds and make this land yours.</span></div><div class="pill" id="seasonPill">🌱 Spring</div></div>
+  <section class="explore" aria-label="Walkable farm world">
+    <div class="explorehead"><strong>🧑‍🌾 Explore your haven</strong><small>ISOMETRIC WALKING TEST</small></div>
+    <div class="worldwrap" id="worldwrap">
+      <canvas id="world" aria-label="Walk around your farm using the joystick"></canvas>
+      <div class="worldhint">Move with the joystick · tap 🌱 to interact</div>
+      <div class="joy" id="joy" aria-label="Movement joystick"><div class="joyknob" id="joyknob"></div></div>
+      <div class="worldactions"><button class="worldaction" id="interactWorld" aria-label="Interact">🌱</button><button class="worldaction" id="centerWorld" aria-label="Center character">◎</button></div>
+    </div>
+    <div class="worldstatus"><span id="worldMessage">Welcome home! Explore the paths and fields.</span><span id="coords">x 0 · y 0</span></div>
+  </section>
+  <div class="tabs" id="mainTabs">
+    <button class="tab active" data-page="farm">🌱 Farm</button>
+    <button class="tab" data-page="market">🧺 Market</button>
+    <button class="tab" data-page="journey">🧭 Journey</button>
+  </div>
+  <section id="page-farm">
+    <div class="sectionhead"><h2>Your fields</h2><small id="plotCount">3 plots</small></div>
+    <div class="field" id="field"></div>
+    <div class="rowbtn"><button class="btn secondary" id="nextDay">🌤️ End day</button><button class="btn ghost" id="expandBtn">🪵 Expand · 80</button></div>
+    <div class="sectionhead"><h2>Seed shed</h2><small>Choose what to grow</small></div>
+    <div class="croplist" id="cropList"></div>
+    <div class="panel" style="margin-top:12px"><strong>🌦️ Farmer's note</strong><p id="farmerNote">Spring is a forgiving season. Wheat grows quickly and gives you a steady start.</p></div>
+  </section>
+  <section id="page-market" class="hidden">
+    <div class="sectionhead"><h2>Village market</h2><small>Turn harvest into coins</small></div>
+    <div class="panel"><strong>📦 Your basket</strong><p>Sell everything you've harvested, or complete a village order for extra reputation.</p><div id="inventory"></div><div class="rowbtn"><button class="btn" id="sellAll">Sell all harvest</button></div></div>
+    <div class="sectionhead"><h2>Village orders</h2><small>Bonus coins + reputation</small></div>
+    <div class="panel" id="orders"></div>
+  </section>
+  <section id="page-journey" class="hidden">
+    <div class="sectionhead"><h2>Your story</h2><small>Choose your own pace</small></div>
+    <div class="panel" id="storyPanel"></div>
+    <div class="panel"><strong>🏡 Your haven</strong><p>This test version focuses on farming, the market, and the early story. The full vision adds recruitable heroes, a growing headquarters, settlement specializations, and optional alliances.</p><div class="note">Your farm is your own. No one can steal crops or damage your land in this prototype. Joining a settlement or alliance is meant to be optional.</div></div>
+    <div class="panel"><strong>💾 Save data</strong><p>Your progress is saved on this browser on this device.</p><div class="rowbtn"><button class="btn ghost" id="saveBtn">Save now</button><button class="btn ghost" id="resetBtn">Reset test</button></div></div>
+  </section>
+</main>
+<footer>Harvest Haven · Android-friendly prototype 0.3 · Test build, not the final game</footer>
+<nav class="nav">
+  <button class="active" data-page="farm"><span>🌱</span>Farm</button>
+  <button data-page="market"><span>🧺</span>Market</button>
+  <button data-page="journey"><span>🧭</span>Journey</button>
+  <button id="navHelp"><span>❔</span>Help</button>
+</nav>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const crops = {
+ wheat:{name:"Wheat",emoji:"🌾",seed:8,sell:15,days:1,desc:"Quick and dependable"},
+ carrot:{name:"Carrot",emoji:"🥕",seed:12,sell:23,days:2,desc:"A village favorite"},
+ berry:{name:"Berries",emoji:"🫐",seed:18,sell:34,days:3,desc:"Worth the wait"},
+ pumpkin:{name:"Pumpkin",emoji:"🎃",seed:25,sell:52,days:4,desc:"A hefty autumn crop"},
+ corn:{name:"Sweet corn",emoji:"🌽",seed:16,sell:29,days:2,desc:"Reliable summer food"},
+ flower:{name:"Sunflower",emoji:"🌻",seed:20,sell:38,days:3,desc:"Brightens the market"}
+};
+const defaultState=()=>({day:1,coins:120,rep:0,totalHarvest:0,plots:[null,null,null],inventory:{wheat:0,carrot:0,berry:0,pumpkin:0,corn:0,flower:0},choice:null,seenDay6:false,ordersDone:0,expanded:0});
+let s=loadState()||defaultState();
+function loadState(){try{return JSON.parse(localStorage.getItem("hh_mobile_v03"))}catch(e){return null}}
+function save(){try{localStorage.setItem("hh_mobile_v03",JSON.stringify(s));toast("Progress saved on this device.")}catch(e){toast("Browser storage unavailable. Keep this tab open.")}}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>t.classList.remove("show"),2200)}
+function season(){return ["Spring","Summer","Autumn","Winter"][Math.floor((s.day-1)/7)%4]}
+function cropReady(p){return p&&s.day>=p.readyDay}
+function renderStats(){document.getElementById("coins").textContent=s.coins;document.getElementById("harvest").textContent=s.totalHarvest;document.getElementById("rep").textContent=s.rep;document.getElementById("dayTitle").textContent=`Day ${s.day} · ${s.day===1?"A Fresh Start":s.day===6?"A Crossroads":s.day>6?"Your Haven Grows":"Village Life"}`;document.getElementById("dayDesc").textContent=s.day===6?"A traveler has arrived with an offer that could change your journey.":s.choice==="farmer"?"You chose the independent farmer's path.":s.choice==="settlement"?"You are helping build a settlement, one step at a time.":"Plant, harvest, and discover what your haven can become.";document.getElementById("seasonPill").textContent=({Spring:"🌱 Spring",Summer:"☀️ Summer",Autumn:"🍂 Autumn",Winter:"❄️ Winter"})[season()];document.getElementById("plotCount").textContent=`${s.plots.length} plots`;}
+function renderField(){const el=document.getElementById("field");el.innerHTML="";s.plots.forEach((p,i)=>{const b=document.createElement("button");b.className="plot "+(!p?"empty":cropReady(p)?"ready":"");if(!p){b.innerHTML=`<span class="crop">🟫</span><b>Empty plot</b><small>Tap to plant</small>`;b.onclick=()=>{switchPage("farm");document.getElementById("cropList").scrollIntoView({behavior:"smooth",block:"center"});toast("Choose a seed from the Seed Shed below.")}}else{const c=crops[p.crop];if(cropReady(p)){b.innerHTML=`<span class="mini">READY!</span><span class="crop">${c.emoji}</span><b>${c.name}</b><small>Tap to harvest</small>`;b.onclick=()=>harvest(i)}else{b.innerHTML=`<span class="crop">${c.emoji}</span><b>${c.name}</b><small>${p.readyDay-s.day} day(s) left</small><div class="progress" style="width:80%"><span style="width:${Math.max(10,100-(p.readyDay-s.day)/c.days*100)}%"></span></div>`;b.onclick=()=>toast(`${c.name} needs ${p.readyDay-s.day} more day(s).`)}}el.appendChild(b)});}
+function renderCrops(){const el=document.getElementById("cropList");el.innerHTML="";Object.entries(crops).forEach(([id,c])=>{const d=document.createElement("div");d.className="cropcard";d.innerHTML=`<div class="emoji">${c.emoji}</div><strong>${c.name}</strong><small>${c.desc}<br>Seed ${c.seed} 🪙 · Sells ${c.sell} 🪙 · ${c.days} day(s)</small><button class="btn" ${s.coins<c.seed?"disabled":""}>Plant seed</button>`;d.querySelector("button").onclick=()=>plant(id);el.appendChild(d)})}
+function plant(id){const i=s.plots.findIndex(p=>!p);if(i<0){toast("All plots are planted. Expand your farm for more land.");return}const c=crops[id];if(s.coins<c.seed){toast("Not enough coins for those seeds.");return}s.coins-=c.seed;s.plots[i]={crop:id,plantedDay:s.day,readyDay:s.day+c.days};render();toast(`${c.name} planted!`)}
+function harvest(i){const p=s.plots[i];if(!p||!cropReady(p))return;const c=crops[p.crop];s.inventory[p.crop]=(s.inventory[p.crop]||0)+1;s.totalHarvest++;s.rep+=1;s.plots[i]=null;render();toast(`Harvested ${c.name}! +1 harvest, +1 reputation.`)}
+function endDay(){s.day++;if(s.day===6&&!s.seenDay6){s.seenDay6=true;render();switchPage("journey");toast("A traveler has arrived. Check Your Story.");return}render();toast(`Day ${s.day} begins. Your crops keep growing!`)}
+function expand(){const cost=80+s.expanded*70;if(s.coins<cost){toast(`You need ${cost} coins to expand.`);return}s.coins-=cost;s.expanded++;s.plots.push(null,null);render();toast("Two new plots added to your farm!")}
+function sellAll(){let total=0,count=0;Object.keys(s.inventory).forEach(id=>{const n=s.inventory[id]||0;total+=n*crops[id].sell;count+=n;s.inventory[id]=0});if(!count){toast("Your basket is empty. Harvest some crops first.");return}s.coins+=total;s.rep+=Math.max(1,Math.floor(count/2));render();toast(`Sold ${count} crop(s) for ${total} coins!`)}
+function renderInventory(){const el=document.getElementById("inventory");const items=Object.entries(s.inventory).filter(([k,v])=>v>0);el.innerHTML=items.length?items.map(([id,n])=>`<div class="order"><span class="orderemoji">${crops[id].emoji}</span><div class="desc"><strong>${crops[id].name} × ${n}</strong><small>${n*crops[id].sell} coins if sold</small></div></div>`).join(""):`<p>Your basket is empty for now. Harvest crops to fill it.</p>`}
+function renderOrders(){const el=document.getElementById("orders");const candidates=[["wheat",2,42],["carrot",2,60],["berry",1,50],["corn",2,75],["flower",1,55]];const idx=(s.day+s.ordersDone)%candidates.length;const [id,n,reward]=candidates[idx];const have=s.inventory[id]||0;el.innerHTML=`<div class="order"><span class="orderemoji">${crops[id].emoji}</span><div class="desc"><strong>Village needs ${n} ${crops[id].name.toLowerCase()}${n>1?"s":""}</strong><small>Reward: ${reward} coins + 3 reputation · You have ${have}</small></div><button class="btn" id="orderBtn" ${have<n?"disabled":""}>Deliver</button></div>`;document.getElementById("orderBtn").onclick=()=>{if((s.inventory[id]||0)<n)return;s.inventory[id]-=n;s.coins+=reward;s.rep+=3;s.ordersDone++;render();toast("Order delivered! The village appreciates you.")}}
+function renderStory(){const el=document.getElementById("storyPanel");if(s.day<6&&!s.choice){el.innerHTML=`<span class="tag">DAY ${s.day} OF 6</span><strong>Before the crossroads</strong><p>Build a small farm, learn the market, and see how you like life here. On Day 6, a traveler will offer you a choice.</p><div class="note">There is no wrong answer. Your choice shapes the opening story, not a permanent lockout of the wider game.</div>`;return}
+if(s.day>=6&&!s.choice){el.innerHTML=`<span class="tag">A CHOICE AWAITS</span><strong>A traveler at your gate</strong><p>A dusty traveler arrives with news: a nearby group is rebuilding an old headquarters. They invite you to help. You can join the settlement, keep your independence, or become a pioneer who does a little of both.</p><div class="choice"><h3>🏡 Help build the settlement</h3><p>Begin the headquarters storyline and meet future recruitable heroes. Farming remains available.</p><button class="btn" id="chooseSettle">Help build</button></div><div class="choice"><h3>🌻 Stay an independent farmer</h3><p>Focus on farming, trade, and growing your own haven. The wider story can still be explored later.</p><button class="btn secondary" id="chooseFarmer">Stay independent</button></div><div class="choice"><h3>🧭 Become a pioneer</h3><p>Keep your farm as home while making occasional trips to help the settlement.</p><button class="btn ghost" id="chooseHybrid">Choose both</button></div>`;["chooseSettle","chooseFarmer","chooseHybrid"].forEach((id,i)=>document.getElementById(id).onclick=()=>{s.choice=["settlement","farmer","pioneer"][i];s.rep+=2;render();toast("Your journey has begun. You can keep farming.")});return}
+const labels={settlement:"Settlement builder",farmer:"Independent farmer",pioneer:"Pioneer"};const texts={settlement:"You are helping rebuild the settlement. Your farm remains yours, and future updates will bring headquarters upgrades and recruitable heroes.",farmer:"You are an independent farmer. Grow your land, trade with the village, and enjoy a self-directed farming life. Settlement and alliance content can still be explored later.",pioneer:"You chose both paths: keep your farm thriving while helping the settlement when it suits you."};el.innerHTML=`<span class="tag">YOUR PATH</span><strong>${labels[s.choice]}</strong><p>${texts[s.choice]}</p><div class="note">Future direction: five settlement specializations (Commander, Farmer/Gatherer, Researcher, Miner/Engineer, Hybrid), recruitable heroes, tactical parties, and optional alliances. Alliance shields should be purchasable with in-game currency during alliance-wide paid-shield windows.</div>`}
+function render(){renderStats();renderField();renderCrops();renderInventory();renderOrders();renderStory();document.getElementById("expandBtn").textContent=`🪵 Expand · ${80+s.expanded*70}`;document.getElementById("expandBtn").disabled=s.coins<80+s.expanded*70;document.getElementById("farmerNote").textContent=season()==="Winter"?"Winter is slow-going. Plan ahead and use the market to keep coins flowing.":season()==="Summer"?"Summer is a good time for corn and steady village orders.":season()==="Autumn"?"Autumn is perfect for bigger crops and building your savings.":"Spring is a forgiving season. Wheat grows quickly and gives you a steady start.";try{localStorage.setItem("hh_mobile_v03",JSON.stringify(s))}catch(e){}}
+function switchPage(page){document.querySelectorAll("main section").forEach(x=>x.classList.toggle("hidden",x.id!=="page-"+page));document.querySelectorAll("[data-page]").forEach(x=>x.classList.toggle("active",x.dataset.page===page));}
+document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>switchPage(b.dataset.page)));
+document.getElementById("nextDay").onclick=endDay;document.getElementById("expandBtn").onclick=expand;document.getElementById("sellAll").onclick=sellAll;document.getElementById("saveBtn").onclick=save;
+document.getElementById("resetBtn").onclick=()=>{if(confirm("Reset all Harvest Haven test progress on this device?")){s=defaultState();render();switchPage("farm");toast("Test progress reset.")}};
+document.getElementById("navHelp").onclick=()=>alert("HARVEST HAVEN TEST\\n\\n1. Tap a seed in the Seed Shed to plant it.\\n2. Tap End day to advance crop growth.\\n3. Tap ready crops to harvest.\\n4. Sell harvest or fulfill village orders in the Market.\\n5. Expand your farm when you have enough coins.\\n6. Reach Day 6 to choose your opening path.\\n\\nProgress saves in this browser on this device.");
+render();
+
+// Lightweight, touch-controlled isometric walking scene. No external assets or network needed.
+(()=>{
+ const canvas=document.getElementById('world'),ctx=canvas.getContext('2d'),joy=document.getElementById('joy'),knob=document.getElementById('joyknob');
+ const player={x:0,y:0,dir:0,step:0}; let axisX=0,axisY=0,joyId=null,last=performance.now(),scale=1;
+ const msg=document.getElementById('worldMessage');
+ function resize(){const r=canvas.getBoundingClientRect(),d=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d));ctx.setTransform(d,0,0,d,0,0);scale=r.width/360;draw()}
+ function iso(x,y){return {x:canvas.clientWidth/2+(x-y)*25*scale,y:canvas.clientHeight*.45+(x+y)*13*scale}}
+ function poly(points,fill,stroke){ctx.beginPath();points.forEach((p,i)=>{const q=iso(p[0],p[1]);i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y)});ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke()}}
+ function ellipse(x,y,rx,ry,color){const p=iso(x,y);ctx.beginPath();ctx.ellipse(p.x,p.y,rx*scale,ry*scale,0,0,Math.PI*2);ctx.fillStyle=color;ctx.fill()}
+ function tree(x,y){const p=iso(x,y);ellipse(x,y,12,5,'#8a6a45');ctx.fillStyle='#8d633c';ctx.fillRect(p.x-3*scale,p.y-28*scale,6*scale,29*scale);[[0,-34,15,'#43804a'],[-9,-27,12,'#5c9950'],[8,-26,12,'#367342'],[0,-43,10,'#6baa5a']].forEach(a=>{ctx.beginPath();ctx.arc(p.x+a[0]*scale,p.y+a[1]*scale,a[2]*scale,0,Math.PI*2);ctx.fillStyle=a[2]>13?'#367342':a[0]<0?'#5b9850':'#478449';ctx.fill()})}
+ function house(x,y){const p=iso(x,y),u=scale;ctx.fillStyle='#e8d3a0';ctx.fillRect(p.x-24*u,p.y-30*u,48*u,30*u);ctx.fillStyle='#b95f45';ctx.beginPath();ctx.moveTo(p.x-29*u,p.y-30*u);ctx.lineTo(p.x,p.y-53*u);ctx.lineTo(p.x+29*u,p.y-30*u);ctx.closePath();ctx.fill();ctx.fillStyle='#744b32';ctx.fillRect(p.x-6*u,p.y-18*u,12*u,18*u);ctx.fillStyle='#b6d9df';ctx.fillRect(p.x+10*u,p.y-22*u,8*u,8*u)}
+ function draw(){if(!ctx||!canvas.clientWidth)return;const w=canvas.clientWidth,h=canvas.clientHeight,u=scale;ctx.clearRect(0,0,w,h);ctx.fillStyle='#b8d99b';ctx.fillRect(0,0,w,h);
+ // diamond-shaped meadow and tiled paths
+ for(let y=-5;y<=5;y++)for(let x=-6;x<=6;x++){let p=iso(x,y);if(p.x<-35||p.x>w+35||p.y<-25||p.y>h+25)continue;let col=((x+y)&1)?'#a9cf89':'#b5d995';poly([[x,y],[x+1,y],[x+1,y+1],[x,y+1]],col)}
+ // winding stone path
+ for(let i=-4;i<=5;i++)poly([[i,-.1],[i+.55,-.1],[i+.55,.55],[i,.55]],'#d9c99e','#c6b58d');
+ // plots and crops
+ for(let y=-2;y<=2;y++)for(let x=-3;x<=3;x++){if((x+y)%2===0&&Math.abs(x)+Math.abs(y)<6){poly([[x,y],[x+.78,y],[x+.78,y+.58],[x,y+.58]],'#93613d','#714b30');for(let j=0;j<3;j++){const q=iso(x+.18+j*.22,y+.28);ctx.fillStyle=['#559144','#70a94e','#46853e'][j];ctx.beginPath();ctx.ellipse(q.x,q.y-4*u,3*u,6*u,-.3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e8c85b';ctx.beginPath();ctx.arc(q.x,q.y-10*u,2*u,0,Math.PI*2);ctx.fill()}}}
+ tree(-4,-3);tree(4,-2);tree(-4,3);tree(4,3);house(-2,-3); // well
+ let well=iso(2,-1);ctx.fillStyle='#8d9e9b';ctx.beginPath();ctx.arc(well.x,well.y,10*u,0,Math.PI*2);ctx.fill();ctx.fillStyle='#527e88';ctx.beginPath();ctx.arc(well.x,well.y,6*u,0,Math.PI*2);ctx.fill();
+ // little fence
+ for(let x=-3;x<=0;x+=.5){let q=iso(x,3.5);ctx.fillStyle='#e7d5a8';ctx.fillRect(q.x-2*u,q.y-12*u,4*u,13*u)}
+ // player with shadow, body and face
+ const p=iso(player.x,player.y);ellipse(player.x,player.y,8,4,'#55774b66');ctx.fillStyle='#416f45';ctx.beginPath();ctx.ellipse(p.x,p.y-13*u,8*u,10*u,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e5b783';ctx.beginPath();ctx.arc(p.x,p.y-25*u,6*u,0,Math.PI*2);ctx.fill();ctx.fillStyle='#d9b64c';ctx.beginPath();ctx.ellipse(p.x,p.y-31*u,8*u,4*u,0,Math.PI,Math.PI*2);ctx.fill();ctx.fillStyle='#6e9b55';ctx.fillRect(p.x-7*u,p.y-7*u,5*u,9*u);ctx.fillRect(p.x+2*u,p.y-7*u,5*u,9*u);if(player.step%2>1){ctx.fillStyle='#fff';ctx.fillRect(p.x+3*u,p.y-26*u,2*u,2*u)}
+ document.getElementById('coords').textContent=`x ${Math.round(player.x*10)/10} · y ${Math.round(player.y*10)/10}`;
+ }
+ function frame(now){let dt=Math.min((now-last)/1000,.04);last=now;if(Math.abs(axisX)+Math.abs(axisY)>.05){player.x=Math.max(-5,Math.min(5,player.x+axisX*dt*2.7));player.y=Math.max(-4,Math.min(4,player.y+axisY*dt*2.7));player.dir=Math.atan2(axisY,axisX);player.step+=dt*9;draw()}requestAnimationFrame(frame)}
+ function setJoy(e){const r=joy.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy,len=Math.hypot(dx,dy),max=r.width*.32;if(len>max){dx=dx/len*max;dy=dy/len*max}axisX=dx/max;axisY=dy/max;knob.style.transform=`translate(${dx}px,${dy}px)`}
+ joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e.pointerId);setJoy(e)});joy.addEventListener('pointermove',e=>{if(e.pointerId===joyId)setJoy(e)});function stopJoy(){joyId=null;axisX=axisY=0;knob.style.transform='translate(0,0)'}joy.addEventListener('pointerup',stopJoy);joy.addEventListener('pointercancel',stopJoy);
+ document.addEventListener('keydown',e=>{if(['ArrowLeft','a','A'].includes(e.key))axisX=-1;if(['ArrowRight','d','D'].includes(e.key))axisX=1;if(['ArrowUp','w','W'].includes(e.key))axisY=-1;if(['ArrowDown','s','S'].includes(e.key))axisY=1});document.addEventListener('keyup',e=>{if(['ArrowLeft','a','A','ArrowRight','d','D'].includes(e.key))axisX=0;if(['ArrowUp','w','W','ArrowDown','s','S'].includes(e.key))axisY=0});
+ document.getElementById('centerWorld').onclick=()=>{player.x=0;player.y=0;draw();msg.textContent='Back at the heart of your haven.'};document.getElementById('interactWorld').onclick=()=>{msg.textContent='You tend the land. Plant seeds and harvest crops in the Farm section below.';const p=iso(player.x,player.y);player.step+=1;draw()};window.addEventListener('resize',resize);resize();requestAnimationFrame(frame);
+})();
+
+</script>
+</body>
+</html>
