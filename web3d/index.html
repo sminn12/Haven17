@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Harvest Haven 3D</title>
+<style>
+:root{--cream:#fff6df;--green:#245d3a;--gold:#f2c45c}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#9bd5f1;font-family:system-ui,-apple-system,Segoe UI,sans-serif;touch-action:none}
+#game{position:fixed;inset:0}canvas{display:block;width:100%;height:100%}
+#hud{position:fixed;inset:0;pointer-events:none;color:#fff}
+.panel{position:absolute;top:12px;left:12px;background:#173c2ddd;border:2px solid #ffffff66;border-radius:16px;padding:10px 14px;box-shadow:0 4px 16px #1235;max-width:calc(100% - 24px)}
+#title{font-size:clamp(16px,4vw,23px);font-weight:900;letter-spacing:.3px}#sub{font-size:12px;opacity:.9;margin-top:2px}
+#counter{position:absolute;top:12px;right:12px;background:#fff5df;color:#284b32;border:2px solid #fff;border-radius:14px;padding:10px 12px;font-weight:800;box-shadow:0 4px 16px #1234}
+#help{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:#173c2dcc;border-radius:12px;padding:8px 12px;font-size:12px;text-align:center;max-width:42%;line-height:1.35}
+#message{position:absolute;left:50%;bottom:20%;transform:translateX(-50%);background:#fff6df;color:#245d3a;padding:10px 16px;border-radius:14px;font-weight:800;box-shadow:0 4px 16px #1234;white-space:nowrap;opacity:0;transition:opacity .2s}
+#controls{position:absolute;bottom:18px;left:18px;display:grid;grid-template-columns:52px 52px 52px;grid-template-rows:52px 52px 52px;gap:5px;pointer-events:auto}
+.ctrl{border:2px solid #ffffffaa;background:#173c2dcc;color:white;border-radius:15px;font-size:22px;font-weight:900;box-shadow:0 3px 8px #1234;touch-action:none;user-select:none}
+#up{grid-column:2;grid-row:1}#left{grid-column:1;grid-row:2}#down{grid-column:2;grid-row:2}#right{grid-column:3;grid-row:2}
+#action{position:absolute;bottom:28px;right:20px;width:78px;height:78px;border-radius:50%;border:3px solid #fff;background:#f2c45c;color:#274b30;font-size:13px;font-weight:900;pointer-events:auto;box-shadow:0 4px 14px #1235}
+#footer{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:10px;color:#173c2d;background:#fff8;padding:4px 8px;border-radius:8px;white-space:nowrap}
+@media(max-width:600px){#help{top:83px;max-width:calc(100% - 24px);width:max-content}#counter{font-size:13px}.panel{padding:8px 11px}#controls{transform:scale(.88);transform-origin:bottom left;left:10px;bottom:12px}#action{width:68px;height:68px;right:14px;bottom:24px}#footer{display:none}}
+</style>
+</head>
+<body>
+<div id="game"></div>
+<div id="hud">
+ <div class="panel"><div id="title">🌾 HARVEST HAVEN</div><div id="sub">A tiny 3D farming adventure</div></div>
+ <div id="counter">🌽 Harvest: <span id="score">0</span>/8</div>
+ <div id="help">Move with the arrows or WASD.<br>Walk up to a golden crop and tap HARVEST.</div>
+ <div id="message">Nice harvest!</div>
+ <div id="controls">
+  <button class="ctrl" id="up" aria-label="Move up">▲</button>
+  <button class="ctrl" id="left" aria-label="Move left">◀</button>
+  <button class="ctrl" id="down" aria-label="Move down">▼</button>
+  <button class="ctrl" id="right" aria-label="Move right">▶</button>
+ </div>
+ <button id="action">🌽<br>HARVEST</button>
+ <div id="footer">Prototype 01 · Explore, collect, and grow</div>
+</div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+const mount=document.getElementById('game');
+const scene=new THREE.Scene(); scene.background=new THREE.Color(0x9bd5f1); scene.fog=new THREE.Fog(0x9bd5f1,24,48);
+const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,100);
+const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight); renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap; renderer.outputColorSpace=THREE.SRGBColorSpace; mount.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xe7f7ff,0x53733a,2.1));
+const sun=new THREE.DirectionalLight(0xfff1cf,2.5); sun.position.set(-8,14,7); sun.castShadow=true; sun.shadow.mapSize.set(1024,1024); scene.add(sun);
+const mat=(color,roughness=.9)=>new THREE.MeshStandardMaterial({color,roughness});
+const grass=mat(0x69ad55), darkGrass=mat(0x4f9346), soil=mat(0x8b5a37), pathMat=mat(0xd9bd83), wood=mat(0x8b552f), leaf=mat(0x338b4c), gold=mat(0xf2b92d), white=mat(0xfff3d8), skin=mat(0xe7ad78), shirt=mat(0x3d85d8), pants=mat(0x394c75);
+function box(w,h,d,m,x,y,z, parent=scene){let o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
+function sphere(r,m,x,y,z,parent=scene){let o=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),m);o.position.set(x,y,z);o.castShadow=true;parent.add(o);return o}
+box(42,.3,42,grass,0,-.22,0);
+for(let i=-20;i<=20;i+=2){box(.04,.01,42, darkGrass,i,-.055,0);box(42,.01,.04,darkGrass,0,-.054,i)}
+// winding farm path
+box(3,.04,30,pathMat,0,-.035,1);
+box(20,.045,2.6,pathMat,4,-.025,5);
+// cottage
+box(4,2.5,3.5,mat(0xe7d3a0),-7,1.1,-7);
+const roof=new THREE.Mesh(new THREE.ConeGeometry(3.2,2,4),mat(0xb64e35));roof.position.set(-7,3.35,-7);roof.rotation.y=Math.PI/4;roof.castShadow=true;scene.add(roof);
+box(1,.12,1.5,wood,-4.5,1.1,-7);box(.75,1.3,.12,mat(0x68452e),-7,0.65,-5.19);
+for(let x=-8;x<=-6;x+=1.3){box(.55,.65,.08,mat(0x8ed7ef),x,1.6,-5.19)}
+// fence
+for(let x=-12;x<=12;x+=1){box(.13,.7,.13,wood,x,.25,-12);if(x<12)box(1,.12,.12,mat(0xb98048),x+.5,.45,-12);}
+// trees
+function tree(x,z,s=1){let g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(s);scene.add(g);let trunk=new THREE.Mesh(new THREE.CylinderGeometry(.18,.25,1.5,8),wood);trunk.position.y=.65;trunk.castShadow=true;g.add(trunk);sphere(.8,mat(0x2f8246),0,1.8,0,g);sphere(.58,mat(0x42984b),-.42,2.05,.1,g);sphere(.55,mat(0x5aa653),.4,2.12,-.12,g);return g}
+[[-14,-8],[-15,1],[-13,10],[14,-9],[15,0],[13,10],[7,-13],[-4,-14]].forEach((p,i)=>tree(p[0],p[1],i%2?.85:1.15));
+// flower flecks
+for(let i=0;i<75;i++){let x=(Math.random()-.5)*36,z=(Math.random()-.5)*36;if(Math.abs(x)<2&&z>-12&&z<13)continue;let f=sphere(.055,mat(i%2?0xfff1b5:0xffd1d7),x,.04,z);f.castShadow=false;}
+// player character group
+const player=new THREE.Group();scene.add(player);
+const body=box(.65,.8,.42,shirt,0,1.05,0,player);body.position.y=1.05;
+sphere(.32,skin,0,1.72,0,player);
+sphere(.34,mat(0x6a3e25),0,1.91,-.04,player);
+box(.72,.14, .48,mat(0x3d6bba),0,1.88,0,player);
+box(.24,.65,.27,pants,-.2,.38,0,player);box(.24,.65,.27,pants,.2,.38,0,player);
+box(.18,.65,.2,skin,-.43,1.08,0,player);box(.18,.65,.2,skin,.43,1.08,0,player);
+box(.34,.15,.46,mat(0x4b3425),-.2,.08,.05,player);box(.34,.15,.46,mat(0x4b3425),.2,.08,.05,player);
+player.position.set(0,0,3);
+const crops=[];const cropPositions=[[-5,1],[-3,1],[3,1],[5,1],[-5,4],[-3,4],[3,4],[5,4]];
+function makeCrop(x,z){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);box(1.45,.08,1.05,soil,0,.02,0,g);for(let j=0;j<3;j++){let stalk=box(.07,.65,.07,leaf,(j-1)*.35,.38,0,g);stalk.rotation.z=(j-1)*-.12;let cob=sphere(.17,gold,(j-1)*.35,.63,0,g);cob.scale.set(.7,1.5,.7);let tip=sphere(.09,mat(0x438d3d),(j-1)*.35,.84,0,g);tip.scale.set(.6,1.3,.6)}crops.push({group:g,available:true,home:g.position.clone()})}
+cropPositions.forEach(p=>makeCrop(...p));
+// small pond
+const water=new THREE.Mesh(new THREE.CylinderGeometry(2.3,2.3,.12,32),new THREE.MeshStandardMaterial({color:0x43b9df,roughness:.25,metalness:.05}));water.position.set(9,.0,5);scene.add(water);
+for(let i=0;i<10;i++){let a=i*Math.PI/5; sphere(.12,mat(0x7a9d59),9+Math.cos(a)*2.4,.05,5+Math.sin(a)*2.4)}
+// barn sign
+box(2.4,1.2,.16,wood,5,1.1,-8);box(2.2,.18,.2,white,5,1.1,-7.89);box(.18,1,.2,white,5,1.1,-7.88);
+const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+const held={};function bind(id,key){let el=document.getElementById(id);const down=e=>{e.preventDefault();held[key]=true};const up=e=>{e.preventDefault();held[key]=false};el.addEventListener('pointerdown',down);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);el.addEventListener('pointerleave',up)}
+bind('up','up');bind('down','down');bind('left','left');bind('right','right');
+let score=0,msgTimer=0;
+function message(t){let el=document.getElementById('message');el.textContent=t;el.style.opacity=1;msgTimer=1.6}
+document.getElementById('action').addEventListener('pointerdown',e=>{e.preventDefault();let best=null,bd=2.25;crops.forEach(c=>{if(!c.available)return;let d=player.position.distanceTo(c.group.position);if(d<bd){bd=d;best=c}});if(best){best.available=false;best.group.visible=false;score++;document.getElementById('score').textContent=score;message(score===8?'All crops harvested! You did it!':'Harvest collected!');if(score===8){setTimeout(()=>message('Wonderful work, farmer! 🌟'),1700)}}else message('Move closer to a golden crop!')});
+const clock=new THREE.Clock();
+function animate(){requestAnimationFrame(animate);let dt=Math.min(clock.getDelta(),.04);let dx=0,dz=0;if(keys.w||keys.arrowup||held.up)dz-=1;if(keys.s||keys.arrowdown||held.down)dz+=1;if(keys.a||keys.arrowleft||held.left)dx-=1;if(keys.d||keys.arrowright||held.right)dx+=1;let len=Math.hypot(dx,dz);if(len){dx/=len;dz/=len;player.position.x+=dx*4.2*dt;player.position.z+=dz*4.2*dt;player.position.x=THREE.MathUtils.clamp(player.position.x,-18,18);player.position.z=THREE.MathUtils.clamp(player.position.z,-18,18);player.rotation.y=Math.atan2(dx,dz)}
+camera.position.set(player.position.x+8,10,player.position.z+11);camera.lookAt(player.position.x,0.5,player.position.z);if(msgTimer>0){msgTimer-=dt;if(msgTimer<=0)document.getElementById('message').style.opacity=0}renderer.render(scene,camera)}
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+animate();
+</script>
+</body>
+</html>
