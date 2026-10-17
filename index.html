@@ -108,26 +108,25 @@ const moveVelocity=new THREE.Vector2();
 function animate(){
  requestAnimationFrame(animate);
  let dt=Math.min(clock.getDelta(),.04);
- let dx=0,dz=0;
- if(keys.w||keys.arrowup||held.up)dz-=1;
- if(keys.s||keys.arrowdown||held.down)dz+=1;
- if(keys.a||keys.arrowleft||held.left)dx-=1;
- if(keys.d||keys.arrowright||held.right)dx+=1;
- let len=Math.hypot(dx,dz);
- if(len){dx/=len;dz/=len;}
- // Smooth acceleration and stopping instead of instant starts/stops.
- const responsiveness=len?11:14;
- const blend=1-Math.exp(-responsiveness*dt);
- moveVelocity.x=THREE.MathUtils.lerp(moveVelocity.x,dx*4.0,blend);
- moveVelocity.y=THREE.MathUtils.lerp(moveVelocity.y,dz*4.0,blend);
- const moving=Math.hypot(moveVelocity.x,moveVelocity.y)>.12;
- player.position.x=THREE.MathUtils.clamp(player.position.x+moveVelocity.x*dt,-18,18);
- player.position.z=THREE.MathUtils.clamp(player.position.z+moveVelocity.y*dt,-18,18);
- if(moving){
-  const desiredRotation=Math.atan2(moveVelocity.x,moveVelocity.y);
-  let angleDelta=Math.atan2(Math.sin(desiredRotation-player.rotation.y),Math.cos(desiredRotation-player.rotation.y));
-  player.rotation.y+=angleDelta*(1-Math.exp(-12*dt));
-  walkTime+=dt*Math.min(1.5,Math.hypot(moveVelocity.x,moveVelocity.y)/4);
+ 
+  let forward=0,turn=0;
+  if(keys.w||keys.arrowup||held.up)forward+=1;
+  if(keys.s||keys.arrowdown||held.down)forward-=1;
+  if(keys.a||keys.arrowleft||held.left)turn-=1;
+  if(keys.d||keys.arrowright||held.right)turn+=1;
+
+  player.rotation.y+=turn*2.2*dt;
+
+  const targetX=Math.sin(player.rotation.y)*forward*4;
+  const targetZ=-Math.cos(player.rotation.y)*forward*4;
+  const blend=1-Math.exp(-(forward?11:14)*dt);
+  moveVelocity.x=THREE.MathUtils.lerp(moveVelocity.x,targetX,blend);
+  moveVelocity.y=THREE.MathUtils.lerp(moveVelocity.y,targetZ,blend);
+  const moving=Math.hypot(moveVelocity.x,moveVelocity.y)>.12;
+  player.position.x=THREE.MathUtils.clamp(player.position.x+moveVelocity.x*dt,-18,18);
+  player.position.z=THREE.MathUtils.clamp(player.position.z+moveVelocity.y*dt,-18,18);
+  if(moving){
+   walkTime+=dt*Math.min(1.5,Math.hypot(moveVelocity.x,moveVelocity.y)/4);
   const swing=Math.sin(walkTime*10)*.52;
   legPivots[0].rotation.x=swing;legPivots[1].rotation.x=-swing;
   armPivots[0].rotation.x=-swing*.72;armPivots[1].rotation.x=swing*.72;
