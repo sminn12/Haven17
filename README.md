@@ -1,25 +1,23 @@
-# Harvest Haven 3D — Prototype 01
+# Harvest Haven — Android Test APK (fixed workflow)
 
-A small browser-based 3D farming adventure built with Three.js.
+This repository packages the selected Harvest Haven HTML build in a Capacitor Android test app.
 
-## Play
-- Open `index.html` in a modern browser with an internet connection.
-- On a phone, use the on-screen arrow buttons to move.
-- On a computer, use WASD or the arrow keys.
-- Walk near golden corn and tap **HARVEST** to collect it.
-- Collect all eight crops.
+## GitHub upload / repair
 
-Three.js is loaded from jsDelivr, so the first launch requires an internet connection.
+Upload the *contents* of this folder to the root of your existing repository `Haven17`, replacing the existing `.github/workflows/android-test-apk.yml`, `package.json`, `capacitor.config.json`, and `www/index.html` when prompted. Make sure `.github/workflows/android-test-apk.yml` is preserved as a nested path. The corrected workflow generates the Android project with Capacitor and runs Gradle from the generated `android/` directory; it does not run Gradle from the repository root where `app/` does not exist.
 
-## Publish with GitHub Pages
-1. Create or open your GitHub repository.
-2. Choose **Add file → Upload files** (not **Create new file**).
-3. Extract this ZIP first. Upload `index.html` and `README.md` from inside the extracted folder.
-4. Commit the files to the `main` branch.
-5. Open **Settings → Pages**.
-6. Under Build and deployment, choose **Deploy from a branch**.
-7. Select branch `main`, folder `/ (root)`, then Save.
-8. Wait a minute or two. The Pages URL will appear on the Pages screen.
+If the GitHub upload interface does not let you replace nested files cleanly, open each existing file in GitHub, choose the pencil/edit option, replace its contents with the matching file from this package, and commit. For `www/index.html`, upload the supplied file to that exact path and choose to replace it.
 
-## Notes
-This is a playable prototype, not a finished commercial game or an Android APK. It uses simple low-poly 3D shapes and a third-person follow camera. It can be wrapped in an Android app later.
+## Build
+
+1. Open the repository's **Actions** tab.
+2. Select **Build Harvest Haven Android Test APK**.
+3. Run workflow if the push did not trigger a run.
+4. When successful, open the run and download the `harvest-haven-debug-apk` artifact.
+5. Extract the ZIP; install `app-debug.apk` on your Android device.
+
+## Important
+
+- This is a debug/test APK, not a Play Store release.
+- The game currently loads Three.js from jsDelivr, so it still requires internet access for that dependency. This is not the offline build yet.
+- This workflow has been reviewed for correct project paths, but has not been run on GitHub in this environment.
